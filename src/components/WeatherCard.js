@@ -1,7 +1,7 @@
 import React from "react";
 
 function WeatherCard({ data }) {
-  if (!data) return null;
+  if (!data || !data.main) return null;
 
   return (
     <div className="card">

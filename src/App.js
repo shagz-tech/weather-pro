@@ -8,26 +8,30 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const API_KEY = "8f17f6c3c03e34f1ff94553215b7f245"; 
+  const API_KEY = "8f17f6c3c03e34f1ff94553215b7f245";
 
   const getWeather = async (city) => {
     if (!city) return;
 
     setLoading(true);
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
-
     try {
-      const res = await fetch(url);
-      const data = await res.json();
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&appid=${API_KEY}&units=metric`
+      );
 
-      if (data.cod === 200) {
+      const data = await res.json();
+      console.log("API DATA:", data);
+
+      // IMPORTANT FIX
+      if (data && data.main) {
         setWeather(data);
       } else {
         alert("City not found");
       }
     } catch (error) {
       console.log(error);
+      alert("Error fetching data");
     }
 
     setLoading(false);
