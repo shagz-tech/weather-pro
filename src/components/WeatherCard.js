@@ -1,17 +1,17 @@
 import React from "react";
 
-function WeatherCard({ weather }) {
-  if (!weather || !weather.main) {
-    return <h3>Search a city to see weather</h3>;
-  }
+function WeatherCard({ data }) {
+  if (!data) return null;
 
   return (
-    <div>
-      <h2>{weather.name}</h2>
-      <h3>{weather.main.temp} °C</h3>
-      <p>{weather.weather[0].description}</p>
+    <div className="card">
+      <h2>{data.name}</h2>
+      <h1>{data.main.temp}°C</h1>
+      <p>{data.weather[0].description}</p>
+      <p>Humidity: {data.main.humidity}%</p>
     </div>
   );
 }
 
 export default WeatherCard;
+

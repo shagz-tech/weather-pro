@@ -10,14 +10,19 @@ function SearchBar({ onSearch }) {
   return (
     <div>
       <input
+        className="search"
         type="text"
-        placeholder="Enter city name"
+        placeholder="Enter city..."
         value={city}
         onChange={(e) => setCity(e.target.value)}
       />
-      <button onClick={handleSearch}>Search</button>
+
+      <button className="btn" onClick={handleSearch}>
+        Search
+      </button>
     </div>
   );
 }
 
 export default SearchBar;
+
