@@ -1,9 +1,10 @@
-import React from "react";
+import React from 'react';
 
 function Loader() {
   return (
-    <div>
-      <h3>Loading...</h3>
+    <div className="loader-wrap">
+      <div className="spinner"></div>
+      <span>Fetching weather data...</span>
     </div>
   );
 }

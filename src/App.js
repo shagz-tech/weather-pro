@@ -1,54 +1,85 @@
-import React, { useState } from "react";
-import "./App.css";
-import SearchBar from "./components/SearchBar";
-import WeatherCard from "./components/WeatherCard";
-import Loader from "./components/Loader";
+import React, { useState } from 'react';
+import './App.css';
+import SearchBar from './components/SearchBar';
+import WeatherCard from './components/WeatherCard';
+import Loader from './components/Loader';
+
+const API_KEY = 'teri_actual_key';
 
 function App() {
-  const [weather, setWeather] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const API_KEY = "8f17f6c3c03e34f1ff94553215b7f245";
-
-  const getWeather = async (city) => {
-    if (!city) return;
-
+  const fetchWeather = async (city) => {
     setLoading(true);
+    setError('');
+    setWeatherData(null);
 
     try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&appid=${API_KEY}&units=metric`
-      );
-
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
+      const res = await fetch(url);
       const data = await res.json();
-      console.log("API DATA:", data);
 
-      // IMPORTANT FIX
-      if (data && data.main) {
-        setWeather(data);
-      } else {
-        alert("City not found");
+      if (!res.ok) {
+        if (data.cod === '404') {
+          setError(`City "${city}" not found. Check spelling and try again.`);
+        } else if (data.cod === 401) {
+          setError('Invalid API key. Update it in App.js.');
+        } else {
+          setError(data.message || 'Something went wrong. Try again.');
+        }
+        return;
       }
-    } catch (error) {
-      console.log(error);
-      alert("Error fetching data");
-    }
 
-    setLoading(false);
+      setWeatherData(data);
+    } catch (err) {
+      setError('Network error. Check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="app">
-      <h1>🌦 WeatherPro</h1>
+    <div className="app-wrapper">
+      <nav className="navbar">
+        <div className="navbar-brand">
+          <div className="navbar-icon">🌦️</div>
+          <div>
+            <div className="navbar-title">WeatherPro</div>
+            <div className="navbar-sub">Real-time weather dashboard</div>
+          </div>
+        </div>
+        <div className="navbar-badge">OpenWeather API</div>
+      </nav>
 
-      <SearchBar onSearch={getWeather} />
+      <main className="main-content">
+        <SearchBar onSearch={fetchWeather} loading={loading} />
 
-      {loading && <Loader />}
+        {error && (
+          <div className="error-banner">⚠️ {error}</div>
+        )}
 
-      {weather && <WeatherCard data={weather} />}
+        {loading && <Loader />}
+
+        {!loading && !error && !weatherData && (
+          <div className="empty-state">
+            <div className="empty-icon">🌍</div>
+            <p className="empty-title">Search for any city to get started</p>
+            <p className="empty-sub">Temperature, humidity, wind speed and more</p>
+          </div>
+        )}
+
+        {!loading && weatherData && (
+          <WeatherCard data={weatherData} />
+        )}
+      </main>
+
+      <footer className="footer">
+        WeatherPro · Built with React.js · Data from OpenWeather API
+      </footer>
     </div>
   );
 }
 
 export default App;
-
